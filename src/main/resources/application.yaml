@@ -1,0 +1,17 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: api-gateway
+  threads:
+    virtual:
+      enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak-davida03-dev.apps.rm3.7wse.p1.openshiftapps.com/realms/books-realm
+
+book-service:
+  url: ${BOOK_SERVICE_URL:http://localhost:8080}
