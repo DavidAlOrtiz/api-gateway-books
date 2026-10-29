@@ -1,14 +1,12 @@
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM docker.io/maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
-RUN ./mvnw dependency:go-offline -B
+RUN mvn -q dependency:go-offline
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
+RUN mvn -q clean package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine
+FROM docker.io/library/eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 9000
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=70", "-jar", "app.jar"]
